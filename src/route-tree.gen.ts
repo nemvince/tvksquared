@@ -9,38 +9,63 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UtilsRouteRouteImport } from './routes/utils/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UtilsIndexRouteImport } from './routes/utils/index'
 
+const UtilsRouteRoute = UtilsRouteRouteImport.update({
+  id: '/utils',
+  path: '/utils',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UtilsIndexRoute = UtilsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => UtilsRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/utils': typeof UtilsRouteRouteWithChildren
+  '/utils/': typeof UtilsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/utils': typeof UtilsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/utils': typeof UtilsRouteRouteWithChildren
+  '/utils/': typeof UtilsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/utils' | '/utils/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/utils'
+  id: '__root__' | '/' | '/utils' | '/utils/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  UtilsRouteRoute: typeof UtilsRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/utils': {
+      id: '/utils'
+      path: '/utils'
+      fullPath: '/utils'
+      preLoaderRoute: typeof UtilsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +73,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/utils/': {
+      id: '/utils/'
+      path: '/'
+      fullPath: '/utils/'
+      preLoaderRoute: typeof UtilsIndexRouteImport
+      parentRoute: typeof UtilsRouteRoute
+    }
   }
 }
 
+interface UtilsRouteRouteChildren {
+  UtilsIndexRoute: typeof UtilsIndexRoute
+}
+
+const UtilsRouteRouteChildren: UtilsRouteRouteChildren = {
+  UtilsIndexRoute: UtilsIndexRoute,
+}
+
+const UtilsRouteRouteWithChildren = UtilsRouteRoute._addFileChildren(
+  UtilsRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  UtilsRouteRoute: UtilsRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
