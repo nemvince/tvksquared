@@ -3,10 +3,10 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
 // Import the generated route tree
-import { routeTree } from "./route-tree.gen";
+import { routeTree } from "@/route-tree.gen";
 
-import "./styles.css";
-import reportWebVitals from "./report-web-vitals.ts";
+import "@/styles.css";
+import reportWebVitals from "@/lib/web-vitals.ts";
 
 // Create a new router instance
 const router = createRouter({
