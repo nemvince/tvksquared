@@ -1,7 +1,23 @@
-import { type Icon, KeyboardIcon, TextAaIcon } from "@phosphor-icons/react";
-import { Link } from "@tanstack/react-router";
-import type { ComponentProps } from "react";
+import {
+  type Icon,
+  KeyboardIcon,
+  MagnifyingGlassIcon,
+  TextAaIcon,
+} from "@phosphor-icons/react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { type ComponentProps, useState } from "react";
 import { Logo } from "@/components/logo";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -15,7 +31,6 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import type { FileRoutesByTo } from "@/route-tree.gen";
-import { Separator } from "../ui/separator";
 
 interface UtilsItem {
   title: string;
@@ -45,22 +60,67 @@ const items: UtilsGroup[] = [
   },
 ];
 
+const SearchBox = () => {
+  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
+  return (
+    <>
+      <Button
+        className="w-full"
+        onClick={() => setOpen(true)}
+        variant="outline"
+      >
+        <MagnifyingGlassIcon className="opacity-50" />
+        Search Utilities
+      </Button>
+      <CommandDialog onOpenChange={setOpen} open={open}>
+        <Command>
+          <CommandInput placeholder="Search..." />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            {items.map((group) => (
+              <CommandGroup heading={group.title} key={group.title}>
+                {group.items.map((item) => (
+                  <CommandItem
+                    key={item.title}
+                    onSelect={() => {
+                      navigate({ to: `/utils/${group.slug}/${item.slug}` });
+                      setOpen(false);
+                    }}
+                  >
+                    <item.icon />
+                    {item.title}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            ))}
+          </CommandList>
+        </Command>
+      </CommandDialog>
+    </>
+  );
+};
+
 export function UtilsSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
-      <SidebarHeader className="mt-2 flex items-center justify-center">
+      <SidebarHeader className="mt-5 flex items-center justify-center p-0">
         <div className="flex items-center gap-4">
           <Logo />
           <span className="font-semibold text-lg">Utils</span>
         </div>
         <Separator className="mt-2" />
+        <div className="w-full px-3">
+          <SearchBox />
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu className="gap-2">
             {items.map((group) => (
               <SidebarMenuItem key={group.title}>
-                <SidebarMenuButton>
+                <SidebarMenuButton disabled={true}>
                   <group.icon />
                   {group.title}
                 </SidebarMenuButton>
