@@ -5,24 +5,24 @@ import { NotFound } from "@/components/not-found";
 import { ThemeProvider } from "@/components/theme/provider";
 
 export const Route = createRootRoute({
-	component: () => (
-		<>
-			<ThemeProvider>
-				<Outlet />
-			</ThemeProvider>
+  component: () => (
+    <>
+      <ThemeProvider>
+        <Outlet />
+      </ThemeProvider>
 
-			<TanStackDevtools
-				config={{
-					position: "bottom-right",
-				}}
-				plugins={[
-					{
-						name: "Tanstack Router",
-						render: <TanStackRouterDevtoolsPanel />,
-					},
-				]}
-			/>
-		</>
-	),
-	notFoundComponent: () => <NotFound />,
+      <TanStackDevtools
+        config={{
+          position: "bottom-right",
+        }}
+        plugins={[
+          {
+            name: "Tanstack Router",
+            render: <TanStackRouterDevtoolsPanel />,
+          },
+        ]}
+      />
+    </>
+  ),
+  notFoundComponent: () => <NotFound />,
 });
