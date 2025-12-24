@@ -30,7 +30,7 @@ const NotFoundKitty = (props: ComponentProps<"svg">) => (
 
 export const NotFound = () => {
   return (
-    <Empty className="h-full bg-linear-to-b from-primary/20 to-20% to-background">
+    <Empty className="h-full bg-linear-to-b from-primary/15 to-background">
       <EmptyHeader>
         <Logo />
         <EmptyMedia className="mb-16" variant="default">
