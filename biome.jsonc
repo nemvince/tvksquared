@@ -10,9 +10,8 @@
     "includes": [
       "**/src/**/*",
       "**/.vscode/**/*",
-      "**/index.html",
-      "**/vite.config.js",
-      "!**/src/route-tree.gen.ts"
+      "!**/src/route-tree.gen.ts",
+      "!**/bun.lock"
     ]
   },
   "formatter": {
