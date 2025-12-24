@@ -1,17 +1,17 @@
+import { type Theme, useTheme } from "@frontend/components/theme/provider";
+import { Button } from "@frontend/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@frontend/components/ui/dropdown-menu";
 import {
   type Icon,
   MonitorIcon,
   MoonIcon,
   SunIcon,
 } from "@phosphor-icons/react";
-import { type Theme, useTheme } from "@/components/theme/provider";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 export function ThemeToggle() {
   const { setTheme, theme } = useTheme();

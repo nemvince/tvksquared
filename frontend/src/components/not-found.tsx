@@ -1,6 +1,4 @@
-import { Link } from "@tanstack/react-router";
-import type { ComponentProps } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@frontend/components/ui/button";
 import {
   Empty,
   EmptyContent,
@@ -8,7 +6,9 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@/components/ui/empty";
+} from "@frontend/components/ui/empty";
+import { Link } from "@tanstack/react-router";
+import type { ComponentProps } from "react";
 import { Logo } from "./logo";
 
 const NotFoundKitty = (props: ComponentProps<"svg">) => (

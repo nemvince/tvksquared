@@ -1,7 +1,5 @@
 "use client";
 
-import { Link } from "@tanstack/react-router";
-import type * as React from "react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -10,7 +8,9 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
+} from "@frontend/components/ui/navigation-menu";
+import { Link } from "@tanstack/react-router";
+import type * as React from "react";
 
 export const Nav = () => {
   return (

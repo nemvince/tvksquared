@@ -1,13 +1,5 @@
-import {
-  type Icon,
-  KeyboardIcon,
-  MagnifyingGlassIcon,
-  TextAaIcon,
-} from "@phosphor-icons/react";
-import { Link, useNavigate } from "@tanstack/react-router";
-import { type ComponentProps, useState } from "react";
-import { Logo } from "@/components/logo";
-import { Button } from "@/components/ui/button";
+import { Logo } from "@frontend/components/logo";
+import { Button } from "@frontend/components/ui/button";
 import {
   Command,
   CommandDialog,
@@ -16,8 +8,8 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import { Separator } from "@/components/ui/separator";
+} from "@frontend/components/ui/command";
+import { Separator } from "@frontend/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -29,8 +21,16 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar";
-import type { FileRoutesByTo } from "@/route-tree.gen";
+} from "@frontend/components/ui/sidebar";
+import type { FileRoutesByTo } from "@frontend/route-tree.gen";
+import {
+  type Icon,
+  KeyboardIcon,
+  MagnifyingGlassIcon,
+  TextAaIcon,
+} from "@phosphor-icons/react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { type ComponentProps, useState } from "react";
 
 interface UtilsItem {
   title: string;

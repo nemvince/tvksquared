@@ -1,7 +1,10 @@
+import { Header } from "@frontend/components/header";
+import {
+  SidebarProvider,
+  SidebarTrigger,
+} from "@frontend/components/ui/sidebar";
+import { UtilsSidebar } from "@frontend/components/utils/sidebar";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { Header } from "@/components/header";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { UtilsSidebar } from "@/components/utils/sidebar";
 
 export const Route = createFileRoute("/utils")({
   component: Layout,

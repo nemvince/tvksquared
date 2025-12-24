@@ -19,7 +19,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "@frontend": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
   server: {

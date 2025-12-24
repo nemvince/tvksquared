@@ -1,9 +1,9 @@
+import { Button } from "@frontend/components/ui/button";
+import { Input } from "@frontend/components/ui/input";
+import { Textarea } from "@frontend/components/ui/textarea";
+import { cn } from "@frontend/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import type { ComponentProps, SyntheticEvent } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 
 function InputGroup({ className, ...props }: ComponentProps<"fieldset">) {
   return (

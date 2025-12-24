@@ -10,6 +10,10 @@
     "moduleDetection": "force",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    // blame this one on baseui
+    "exactOptionalPropertyTypes": false,
+    "noEmit": true,
     "target": "ES2022",
     "baseUrl": ".",
     "paths": {

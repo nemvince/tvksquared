@@ -1,15 +1,18 @@
-import { CheckIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
-import { Command as CommandPrimitive } from "cmdk";
-import type { ComponentProps, ReactNode } from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
-import { cn } from "@/lib/utils";
+} from "@frontend/components/ui/dialog";
+import {
+  InputGroup,
+  InputGroupAddon,
+} from "@frontend/components/ui/input-group";
+import { cn } from "@frontend/lib/utils";
+import { CheckIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
+import { Command as CommandPrimitive } from "cmdk";
+import type { ComponentProps, ReactNode } from "react";
 
 function Command({
   className,

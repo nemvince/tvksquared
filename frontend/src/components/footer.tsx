@@ -1,7 +1,7 @@
+import { Button } from "@frontend/components/ui/button";
+import { Separator } from "@frontend/components/ui/separator";
 import { GithubLogoIcon } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 
 export const Footer = () => {
   return (

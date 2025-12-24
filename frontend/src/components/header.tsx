@@ -1,8 +1,8 @@
+import { Logo } from "@frontend/components/logo";
+import { Nav } from "@frontend/components/nav";
+import { ThemeToggle } from "@frontend/components/theme/toggle";
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { Logo } from "@/components/logo";
-import { Nav } from "@/components/nav";
-import { ThemeToggle } from "@/components/theme/toggle";
 
 export const Header = ({
   children = <Nav />,
