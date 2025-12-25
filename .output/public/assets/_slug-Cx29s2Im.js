@@ -1,0 +1,1 @@
+import{Qt as e,Zt as t}from"./index-BwYg42vB.js";var n=e(t());function r(){return(0,n.jsx)(`div`,{children:`Hello "/blog/$slug"!`})}export{r as component};
