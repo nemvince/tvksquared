@@ -1,3 +1,5 @@
+import { Header } from "@frontend/components/header";
+import { Logo } from "@frontend/components/logo";
 import { Button } from "@frontend/components/ui/button";
 import {
   Empty,
@@ -9,7 +11,6 @@ import {
 } from "@frontend/components/ui/empty";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import type { ComponentProps } from "react";
-import { Logo } from "./logo";
 
 const NotFoundKitty = (props: ComponentProps<"svg">) => (
   <svg
@@ -33,30 +34,33 @@ export const NotFound = () => {
   const router = useRouter();
 
   return (
-    <Empty className="h-full bg-linear-to-b from-primary/15 to-background">
-      <EmptyHeader>
-        <Logo />
-        <EmptyMedia className="mb-16" variant="default">
-          <NotFoundKitty className="h-32 w-auto fill-primary md:h-48" />
-        </EmptyMedia>
-        <EmptyTitle>Not found</EmptyTitle>
-        <EmptyDescription>
-          The page you are looking for does not exist.
-        </EmptyDescription>
-      </EmptyHeader>
-      <EmptyContent>
-        <Button
-          className="cursor-pointer"
-          onClick={() => {
-            router.history.canGoBack()
-              ? router.history.back()
-              : navigate({ to: "/" });
-          }}
-          variant="link"
-        >
-          Go back
-        </Button>
-      </EmptyContent>
-    </Empty>
+    <>
+      <Empty className="h-full bg-linear-to-b from-primary/15 to-background">
+        <EmptyHeader>
+          <Logo />
+          <EmptyMedia className="mb-16" variant="default">
+            <NotFoundKitty className="h-32 w-auto fill-primary md:h-48" />
+          </EmptyMedia>
+          <EmptyTitle>Not found</EmptyTitle>
+          <EmptyDescription>
+            The page you are looking for does not exist.
+          </EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>
+          <Button
+            className="cursor-pointer"
+            onClick={() => {
+              router.history.canGoBack()
+                ? router.history.back()
+                : navigate({ to: "/" });
+            }}
+            variant="link"
+          >
+            Go back
+          </Button>
+        </EmptyContent>
+      </Empty>
+      <Header showLogo={false} />
+    </>
   );
 };
