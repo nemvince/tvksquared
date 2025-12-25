@@ -1,1 +1,0 @@
-import{Kt as e,Qt as t,Zt as n,g as r,o as i}from"./index-BwYg42vB.js";var a=t(n());function o(){return(0,a.jsxs)(a.Fragment,{children:[(0,a.jsx)(i,{children:(0,a.jsx)(r,{})}),(0,a.jsx)(e,{})]})}export{o as component};
