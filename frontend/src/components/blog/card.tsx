@@ -23,9 +23,9 @@ type BlogCardProps = {
 
 export function BlogCard({ title, slug, excerpt, tags }: BlogCardProps) {
   return (
-    <Card className="relative w-full max-w-sm overflow-hidden pt-0">
+    <Card className="relative flex w-full max-w-sm flex-col overflow-hidden py-0">
       <Link
-        className="relative z-10 block hover:underline"
+        className="relative z-10 block grow hover:underline"
         params={{ slug }}
         to="/blog/$slug"
       >
@@ -39,11 +39,11 @@ export function BlogCard({ title, slug, excerpt, tags }: BlogCardProps) {
           width={1887}
         />
         <CardHeader className="relative z-20 pt-4">
-          <CardTitle>{title}</CardTitle>
-          <CardDescription className="truncate">{excerpt}</CardDescription>
+          <CardTitle className="line-clamp-2">{title}</CardTitle>
+          <CardDescription className="line-clamp-2">{excerpt}</CardDescription>
         </CardHeader>
       </Link>
-      <CardFooter className="overflow-y-scroll">
+      <CardFooter className="overflow-scroll overflow-y-scroll [&::-webkit-scrollbar-thumb]:bg-primary [&::-webkit-scrollbar-track]:bg-card [&::-webkit-scrollbar]:h-px [&::-webkit-scrollbar]:w-0">
         {tags.map((tag) => (
           <Badge
             key={tag.slug}
