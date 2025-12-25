@@ -13,15 +13,18 @@ export const Route = createFileRoute("/utils")({
 
 function Layout() {
   return (
-    <SidebarProvider>
-      <UtilsSidebar />
-      <div className="flex grow flex-col gap-4">
-        <Header showLogo={false}>
-          <SidebarTrigger />
-          <Nav />
-        </Header>
-        <Outlet />
-      </div>
-    </SidebarProvider>
+    <>
+      <title>tvk² - utils</title>
+      <SidebarProvider>
+        <UtilsSidebar />
+        <div className="flex grow flex-col gap-4">
+          <Header showLogo={false}>
+            <SidebarTrigger />
+            <Nav />
+          </Header>
+          <Outlet />
+        </div>
+      </SidebarProvider>
+    </>
   );
 }

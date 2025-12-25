@@ -23,17 +23,17 @@ export const Nav = () => {
               <li className="row-span-3">
                 <NavigationMenuLink
                   render={
-                    <a
+                    <Link
                       className="flex h-full w-full select-none flex-col justify-end rounded-md bg-linear-to-b from-primary/20 to-card p-4 no-underline outline-hidden transition-all duration-200 focus:shadow-md md:p-6"
-                      href="/"
+                      to="/"
                     >
                       <div className="mb-2 font-medium text-lg sm:mt-4">
-                        tvk squared
+                        tvk²
                       </div>
                       <p className="text-muted-foreground text-sm leading-tight">
                         A site that tries to be useful.
                       </p>
-                    </a>
+                    </Link>
                   }
                 />
               </li>

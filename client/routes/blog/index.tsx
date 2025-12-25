@@ -111,150 +111,157 @@ function RouteComponent() {
   };
 
   return (
-    <main className="flex grow flex-col gap-6 p-4">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex gap-3">
-          <div className="relative max-w-md flex-1">
-            <MagnifyingGlassIcon
-              className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
-              weight="bold"
-            />
-            <Input
-              className="pl-9"
-              onChange={(e) => updateSearch({ q: e.target.value })}
-              placeholder="Search articles..."
-              type="search"
-              value={q}
-            />
+    <>
+      <title>tvk² - blog</title>
+      <main className="flex grow flex-col gap-6 p-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex gap-3">
+            <div className="relative max-w-md flex-1">
+              <MagnifyingGlassIcon
+                className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
+                weight="bold"
+              />
+              <Input
+                className="pl-9"
+                onChange={(e) => updateSearch({ q: e.target.value })}
+                placeholder="Search articles..."
+                type="search"
+                value={q}
+              />
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button variant="outline">
+                    <ArrowsDownUpIcon weight="bold" />
+                    Sort by: {sort === "publishedAt" ? "Date" : "Title"}
+                  </Button>
+                }
+              />
+              <DropdownMenuContent className="w-48">
+                <DropdownMenuItem
+                  onClick={() => updateSearch({ sort: "publishedAt" })}
+                >
+                  <CalendarIcon weight="bold" />
+                  Date (newest first)
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => updateSearch({ sort: "title" })}
+                >
+                  <TextAaIcon weight="bold" />
+                  Title (A-Z)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button variant="outline">
-                  <ArrowsDownUpIcon weight="bold" />
-                  Sort by: {sort === "publishedAt" ? "Date" : "Title"}
-                </Button>
-              }
-            />
-            <DropdownMenuContent className="w-48">
-              <DropdownMenuItem
-                onClick={() => updateSearch({ sort: "publishedAt" })}
-              >
-                <CalendarIcon weight="bold" />
-                Date (newest first)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => updateSearch({ sort: "title" })}>
-                <TextAaIcon weight="bold" />
-                Title (A-Z)
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <p className="pr-4 text-muted-foreground text-sm">
+            {totalItems} article{totalItems !== 1 ? "s" : ""} found
+            {debouncedSearch && ` for "${debouncedSearch}"`}
+          </p>
         </div>
-        <p className="pr-4 text-muted-foreground text-sm">
-          {totalItems} article{totalItems !== 1 ? "s" : ""} found
-          {debouncedSearch && ` for "${debouncedSearch}"`}
-        </p>
-      </div>
 
-      {query.isLoading && (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <BlogCardSkeleton key={`skeleton-${i.toString()}`} />
-          ))}
-        </div>
-      )}
-
-      {query.error && (
-        <Empty className="my-12">
-          <EmptyMedia variant="icon">
-            <NewspaperClippingIcon weight="bold" />
-          </EmptyMedia>
-          <EmptyTitle>Error loading articles</EmptyTitle>
-          <EmptyDescription>{String(query.error)}</EmptyDescription>
-          <Button onClick={() => query.refetch()} variant="outline">
-            Try again
-          </Button>
-        </Empty>
-      )}
-
-      {query.data?.articles.length === 0 && (
-        <Empty className="my-12">
-          <EmptyMedia variant="icon">
-            <NewspaperClippingIcon weight="bold" />
-          </EmptyMedia>
-          <EmptyTitle>
-            {debouncedSearch ? "No articles found" : "No articles yet"}
-          </EmptyTitle>
-          <EmptyDescription>
-            {debouncedSearch
-              ? `No articles match "${debouncedSearch}". Try a different search term.`
-              : "Check back later for new content."}
-          </EmptyDescription>
-          {debouncedSearch && (
-            <Button onClick={() => updateSearch({ q: "" })} variant="outline">
-              Clear search
-            </Button>
-          )}
-        </Empty>
-      )}
-
-      {query.data && query.data.articles.length > 0 && (
-        <>
+        {query.isLoading && (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {query.data.articles.map((article) => (
-              <BlogCard key={article.id} {...article} />
+            {Array.from({ length: 8 }).map((_, i) => (
+              <BlogCardSkeleton key={`skeleton-${i.toString()}`} />
             ))}
           </div>
+        )}
 
-          {totalPages > 1 && (
-            <Pagination className="mt-6">
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    aria-disabled={page <= 1}
-                    className={
-                      page <= 1
-                        ? "pointer-events-none opacity-50"
-                        : "cursor-pointer"
-                    }
-                    onClick={() => page > 1 && updateSearch({ page: page - 1 })}
-                  />
-                </PaginationItem>
-                {getPaginationItems().map((item, index) =>
-                  item === "ellipsis" ? (
-                    <PaginationItem key={`ellipsis-${index.toString()}`}>
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                  ) : (
-                    <PaginationItem key={item}>
-                      <PaginationLink
-                        className="cursor-pointer"
-                        isActive={item === page}
-                        onClick={() => updateSearch({ page: item })}
-                      >
-                        {item}
-                      </PaginationLink>
-                    </PaginationItem>
-                  )
-                )}
-                <PaginationItem>
-                  <PaginationNext
-                    aria-disabled={page >= totalPages}
-                    className={
-                      page >= totalPages
-                        ? "pointer-events-none opacity-50"
-                        : "cursor-pointer"
-                    }
-                    onClick={() =>
-                      page < totalPages && updateSearch({ page: page + 1 })
-                    }
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          )}
-        </>
-      )}
-    </main>
+        {query.error && (
+          <Empty className="my-12">
+            <EmptyMedia variant="icon">
+              <NewspaperClippingIcon weight="bold" />
+            </EmptyMedia>
+            <EmptyTitle>Error loading articles</EmptyTitle>
+            <EmptyDescription>{String(query.error)}</EmptyDescription>
+            <Button onClick={() => query.refetch()} variant="outline">
+              Try again
+            </Button>
+          </Empty>
+        )}
+
+        {query.data?.articles.length === 0 && (
+          <Empty className="my-12">
+            <EmptyMedia variant="icon">
+              <NewspaperClippingIcon weight="bold" />
+            </EmptyMedia>
+            <EmptyTitle>
+              {debouncedSearch ? "No articles found" : "No articles yet"}
+            </EmptyTitle>
+            <EmptyDescription>
+              {debouncedSearch
+                ? `No articles match "${debouncedSearch}". Try a different search term.`
+                : "Check back later for new content."}
+            </EmptyDescription>
+            {debouncedSearch && (
+              <Button onClick={() => updateSearch({ q: "" })} variant="outline">
+                Clear search
+              </Button>
+            )}
+          </Empty>
+        )}
+
+        {query.data && query.data.articles.length > 0 && (
+          <>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {query.data.articles.map((article) => (
+                <BlogCard key={article.id} {...article} />
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <Pagination className="mt-6">
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      aria-disabled={page <= 1}
+                      className={
+                        page <= 1
+                          ? "pointer-events-none opacity-50"
+                          : "cursor-pointer"
+                      }
+                      onClick={() =>
+                        page > 1 && updateSearch({ page: page - 1 })
+                      }
+                    />
+                  </PaginationItem>
+                  {getPaginationItems().map((item, index) =>
+                    item === "ellipsis" ? (
+                      <PaginationItem key={`ellipsis-${index.toString()}`}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    ) : (
+                      <PaginationItem key={item}>
+                        <PaginationLink
+                          className="cursor-pointer"
+                          isActive={item === page}
+                          onClick={() => updateSearch({ page: item })}
+                        >
+                          {item}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  )}
+                  <PaginationItem>
+                    <PaginationNext
+                      aria-disabled={page >= totalPages}
+                      className={
+                        page >= totalPages
+                          ? "pointer-events-none opacity-50"
+                          : "cursor-pointer"
+                      }
+                      onClick={() =>
+                        page < totalPages && updateSearch({ page: page + 1 })
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
+          </>
+        )}
+      </main>
+    </>
   );
 }

@@ -5,5 +5,10 @@ export const Route = createFileRoute("/blog/$slug")({
 });
 
 function RouteComponent() {
-  return <div>Hello "/blog/$slug"!</div>;
+  return (
+    <>
+      <title>tvk² - blog post</title>
+      <div>Hello "/blog/$slug"!</div>
+    </>
+  );
 }

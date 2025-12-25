@@ -49,6 +49,7 @@ const Auth = () => {
 function App() {
   return (
     <>
+      <title>tvk² - home</title>
       <Header />
       <div className="grow">
         <h1 className="font-bold text-4xl tracking-tight">test</h1>
