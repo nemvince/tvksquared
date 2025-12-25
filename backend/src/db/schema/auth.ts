@@ -1,6 +1,4 @@
-import { relations } from "drizzle-orm";
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 
 export const user = sqliteTable("user", {
   id: text("id").primaryKey(),
@@ -83,46 +81,9 @@ export const verification = sqliteTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)]
 );
 
-export const userRelations = relations(user, ({ many }) => ({
-  sessions: many(session),
-  accounts: many(account),
-}));
-
-export const sessionRelations = relations(session, ({ one }) => ({
-  user: one(user, {
-    fields: [session.userId],
-    references: [user.id],
-  }),
-}));
-
-export const accountRelations = relations(account, ({ one }) => ({
-  user: one(user, {
-    fields: [account.userId],
-    references: [user.id],
-  }),
-}));
-
 export const authSchema = {
   user,
   session,
   account,
   verification,
 };
-
-export const authRelations = {
-  userRelations,
-  sessionRelations,
-  accountRelations,
-};
-
-export const createUserSchema = createInsertSchema(user);
-export const selectUserSchema = createSelectSchema(user);
-
-export const createSessionSchema = createInsertSchema(session);
-export const selectSessionSchema = createSelectSchema(session);
-
-export const createAccountSchema = createInsertSchema(account);
-export const selectAccountSchema = createSelectSchema(account);
-
-export const createVerificationSchema = createInsertSchema(verification);
-export const selectVerificationSchema = createSelectSchema(verification);
