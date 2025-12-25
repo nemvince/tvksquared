@@ -34,10 +34,10 @@ export const articles = new Elysia({ prefix: "articles" })
         }
         const canReadUnpublished = await auth.api.userHasPermission({
           body: {
-            permission: { "article": ["readUnpublished"] },
+            permission: { article: ["readUnpublished"] },
             userId: session.user.id,
-          }
-        })
+          },
+        });
         if (!canReadUnpublished) {
           throw new Error("Unauthorized to view unpublished articles");
         }
@@ -124,18 +124,15 @@ export const articles = new Elysia({ prefix: "articles" })
       }
       const canCreate = await auth.api.userHasPermission({
         body: {
-          permission: { "article": ["create"] },
+          permission: { article: ["create"] },
           userId: session.user.id,
-        }
-      })
+        },
+      });
       if (!canCreate) {
         throw new Error("Unauthorized to create article");
       }
 
-      const [result] = await db
-        .insert(article)
-        .values(body)
-        .returning()
+      const [result] = await db.insert(article).values(body).returning();
 
       if (!result) {
         throw new Error("Failed to create article");
@@ -159,9 +156,7 @@ export const articles = new Elysia({ prefix: "articles" })
         .where(
           and(
             eq(article.slug, params.slug),
-            session?.user
-              ? undefined
-              : eq(article.published, true)
+            session?.user ? undefined : eq(article.published, true)
           )
         )
         .limit(1);
@@ -176,10 +171,10 @@ export const articles = new Elysia({ prefix: "articles" })
         }
         const canReadUnpublished = await auth.api.userHasPermission({
           body: {
-            permission: { "article": ["readUnpublished"] },
+            permission: { article: ["readUnpublished"] },
             userId: session.user.id,
-          }
-        })
+          },
+        });
         if (!canReadUnpublished) {
           throw new Error("Unauthorized to view unpublished article");
         }
@@ -203,10 +198,10 @@ export const articles = new Elysia({ prefix: "articles" })
       }
       const canUpdate = await auth.api.userHasPermission({
         body: {
-          permission: { "article": ["update"] },
+          permission: { article: ["update"] },
           userId: session.user.id,
-        }
-      })
+        },
+      });
       if (!canUpdate) {
         throw new Error("Unauthorized to update article");
       }
@@ -240,10 +235,10 @@ export const articles = new Elysia({ prefix: "articles" })
       }
       const canDelete = await auth.api.userHasPermission({
         body: {
-          permission: { "article": ["delete"] },
+          permission: { article: ["delete"] },
           userId: session.user.id,
-        }
-      })
+        },
+      });
       if (!canDelete) {
         throw new Error("Unauthorized to delete article");
       }

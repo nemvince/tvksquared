@@ -28,13 +28,16 @@ const createTags = async () => {
     const id = faker.string.nanoid();
     const slug = kebabCase(name);
 
-    await db.insert(tag).values({
-      id,
-      name,
-      slug,
-      createdAt: faker.date.past({ years: 1 }),
-      updatedAt: new Date(),
-    }).onConflictDoNothing();
+    await db
+      .insert(tag)
+      .values({
+        id,
+        name,
+        slug,
+        createdAt: faker.date.past({ years: 1 }),
+        updatedAt: new Date(),
+      })
+      .onConflictDoNothing();
 
     tagIds.push(id);
   }
