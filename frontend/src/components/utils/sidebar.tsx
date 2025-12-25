@@ -32,18 +32,18 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import { type ComponentProps, useState } from "react";
 
-interface UtilsItem {
+type UtilsItem = {
   title: string;
   slug: string;
   icon: Icon;
-}
+};
 
-interface UtilsGroup {
+type UtilsGroup = {
   title: string;
   slug: string;
   icon: Icon;
   items: UtilsItem[];
-}
+};
 
 const items: UtilsGroup[] = [
   {

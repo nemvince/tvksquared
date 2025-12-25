@@ -7,7 +7,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@frontend/components/ui/empty";
-import { Link } from "@tanstack/react-router";
+import { useNavigate, useRouter } from "@tanstack/react-router";
 import type { ComponentProps } from "react";
 import { Logo } from "./logo";
 
@@ -29,6 +29,9 @@ const NotFoundKitty = (props: ComponentProps<"svg">) => (
 );
 
 export const NotFound = () => {
+  const navigate = useNavigate();
+  const router = useRouter();
+
   return (
     <Empty className="h-full bg-linear-to-b from-primary/15 to-background">
       <EmptyHeader>
@@ -43,10 +46,16 @@ export const NotFound = () => {
       </EmptyHeader>
       <EmptyContent>
         <Button
-          nativeButton={false}
-          render={<Link to="/">Go back</Link>}
+          className="cursor-pointer"
+          onClick={() => {
+            router.history.canGoBack()
+              ? router.history.back()
+              : navigate({ to: "/" });
+          }}
           variant="link"
-        />
+        >
+          Go back
+        </Button>
       </EmptyContent>
     </Empty>
   );

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UtilsRouteRouteImport } from './routes/utils/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UtilsIndexRouteImport } from './routes/utils/index'
+import { Route as BlogIndexRouteImport } from './routes/blog/index'
 
 const UtilsRouteRoute = UtilsRouteRouteImport.update({
   id: '/utils',
@@ -28,33 +29,42 @@ const UtilsIndexRoute = UtilsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => UtilsRouteRoute,
 } as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/utils': typeof UtilsRouteRouteWithChildren
+  '/blog': typeof BlogIndexRoute
   '/utils/': typeof UtilsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/blog': typeof BlogIndexRoute
   '/utils': typeof UtilsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/utils': typeof UtilsRouteRouteWithChildren
+  '/blog/': typeof BlogIndexRoute
   '/utils/': typeof UtilsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/utils' | '/utils/'
+  fullPaths: '/' | '/utils' | '/blog' | '/utils/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/utils'
-  id: '__root__' | '/' | '/utils' | '/utils/'
+  to: '/' | '/blog' | '/utils'
+  id: '__root__' | '/' | '/utils' | '/blog/' | '/utils/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   UtilsRouteRoute: typeof UtilsRouteRouteWithChildren
+  BlogIndexRoute: typeof BlogIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -80,6 +90,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UtilsIndexRouteImport
       parentRoute: typeof UtilsRouteRoute
     }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -98,6 +115,7 @@ const UtilsRouteRouteWithChildren = UtilsRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   UtilsRouteRoute: UtilsRouteRouteWithChildren,
+  BlogIndexRoute: BlogIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

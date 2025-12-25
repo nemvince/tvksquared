@@ -1,6 +1,7 @@
 import "@backend/db/migrate";
 import { auth } from "@backend/lib/auth";
 import { articles } from "@backend/routes/articles";
+import { ORPCError, onError } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/fetch";
 import { CORSPlugin } from "@orpc/server/plugins";
 import { serve } from "bun";
@@ -12,13 +13,28 @@ export const router = {
 
 const rpcHandler = new RPCHandler(router, {
   plugins: [new CORSPlugin()],
+  interceptors: [
+    onError((error) => {
+      if (error instanceof ORPCError) {
+        console.error(`RPC Error: [${error.code}] ${error.message}`);
+      } else {
+        console.error("Unexpected Error:", error);
+      }
+    }),
+  ],
 });
 
-const logRequest = (req: Request, res: Response, meta: {
-  handler: string;
-}) => {
-  console.log(`${padEnd(req.method, 6)}${padEnd(res.status.toString(), 4)} ${padEnd(meta.handler, 10)} ${req.url}`);
-}
+const logRequest = (
+  req: Request,
+  res: Response,
+  meta: {
+    handler: string;
+  }
+) => {
+  console.log(
+    `${padEnd(req.method, 6)}${padEnd(res.status.toString(), 4)} ${padEnd(meta.handler, 10)} ${req.url}`
+  );
+};
 
 const server = serve({
   port: 3001,

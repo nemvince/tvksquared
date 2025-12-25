@@ -54,6 +54,10 @@ export const Nav = () => {
             className={navigationMenuTriggerStyle()}
             render={<Link to="/utils">Utils</Link>}
           />
+          <NavigationMenuLink
+            className={navigationMenuTriggerStyle()}
+            render={<Link to="/blog">Blog</Link>}
+          />
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

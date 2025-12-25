@@ -3,12 +3,15 @@ import { Nav } from "@frontend/components/nav";
 import { ThemeToggle } from "@frontend/components/theme/toggle";
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { ButtonGroup } from "./ui/button-group";
 
 export const Header = ({
   children = <Nav />,
+  additionalButtons = null,
   showLogo = true,
 }: {
   children?: ReactNode;
+  additionalButtons?: ReactNode;
   showLogo?: boolean;
 }) => {
   return (
@@ -23,7 +26,10 @@ export const Header = ({
         {children}
       </div>
 
-      <ThemeToggle />
+      <ButtonGroup>
+        {additionalButtons}
+        <ThemeToggle />
+      </ButtonGroup>
     </header>
   );
 };

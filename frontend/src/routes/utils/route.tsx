@@ -1,4 +1,5 @@
 import { Header } from "@frontend/components/header";
+import { Nav } from "@frontend/components/nav";
 import {
   SidebarProvider,
   SidebarTrigger,
@@ -17,6 +18,7 @@ function Layout() {
       <div className="flex grow flex-col gap-4">
         <Header showLogo={false}>
           <SidebarTrigger />
+          <Nav />
         </Header>
         <Outlet />
       </div>

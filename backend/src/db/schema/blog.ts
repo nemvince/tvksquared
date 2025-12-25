@@ -6,7 +6,11 @@ import {
   sqliteTable,
   text,
 } from "drizzle-orm/sqlite-core";
-import { createInsertSchema, createSelectSchema, createUpdateSchema } from "drizzle-zod";
+import {
+  createInsertSchema,
+  createSelectSchema,
+  createUpdateSchema,
+} from "drizzle-zod";
 
 export const article = sqliteTable(
   "article",

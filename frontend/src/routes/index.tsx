@@ -1,9 +1,7 @@
 import { Footer } from "@frontend/components/footer";
 import { Header } from "@frontend/components/header";
 import { Button } from "@frontend/components/ui/button";
-import { api } from "@frontend/lib/api";
 import { authClient } from "@frontend/lib/auth";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
@@ -49,25 +47,12 @@ const Auth = () => {
 };
 
 function App() {
-  const query = useQuery(api.articles.getAll.queryOptions({
-    input: {},
-  }));
-
-  if (query.isLoading) {
-    return <div>Loading articles...</div>;
-  }
-
-  if (query.error) {
-    return <div>Error loading articles: {String(query.error)}</div>;
-  }
-
   return (
     <>
       <Header />
       <div className="grow">
         <h1 className="font-bold text-4xl tracking-tight">test</h1>
         <p>hello world</p>
-        {JSON.stringify(query.data)}
         <Auth />
       </div>
       <Footer />

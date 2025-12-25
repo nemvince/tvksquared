@@ -1,6 +1,6 @@
 import { base } from "@backend/context";
 import { db } from "@backend/db";
-import { articleSelectSchema } from "@backend/db/schema/blog";
+import { articleSelectSchema, tagSelectSchema } from "@backend/db/schema/blog";
 import { auth } from "@backend/lib/auth";
 import { authMiddleware } from "@backend/lib/auth/middleware";
 import { ORPCError } from "@orpc/server";
@@ -22,8 +22,8 @@ export const getAll = base
   )
   .output(
     z.object({
-      articles: z.array(
-        articleSelectSchema.pick({
+      articles: articleSelectSchema
+        .pick({
           id: true,
           title: true,
           slug: true,
@@ -31,8 +31,17 @@ export const getAll = base
           published: true,
           publishedAt: true,
           updatedAt: true,
-        }).extend({})
-      ),
+        })
+        .extend({
+          tags: tagSelectSchema
+            .pick({
+              id: true,
+              name: true,
+              slug: true,
+            })
+            .array(),
+        })
+        .array(),
       pagination: z.object({
         page: z.number(),
         totalPages: z.number(),
@@ -47,8 +56,12 @@ export const getAll = base
       if (!context.user) {
         throw new ORPCError("UNAUTHORIZED");
       }
-      const hasPermission = await auth.api.userHasPermission(
-        { body: { userId: context.user.id, permission: { "article": ["readUnpublished"] } } })
+      const hasPermission = await auth.api.userHasPermission({
+        body: {
+          userId: context.user.id,
+          permission: { article: ["readUnpublished"] },
+        },
+      });
       if (!hasPermission) {
         throw new ORPCError("FORBIDDEN");
       }
@@ -56,16 +69,29 @@ export const getAll = base
 
     const articles = await db.query.article.findMany({
       where: {
-        title: search ? {
-          ilike: `%${search}%`,
-        } : undefined,
+        OR: search
+          ? [
+              {
+                title: { like: `%${search}%` },
+              },
+              {
+                excerpt: { like: `%${search}%` },
+              },
+              {
+                content: { like: `%${search}%` },
+              },
+            ]
+          : undefined,
         published: showUnpublished ? undefined : true,
       },
-      orderBy: sortBy === "publishedAt" ? { publishedAt: "desc" } : { title: "asc" },
+      orderBy:
+        sortBy === "publishedAt" ? { publishedAt: "desc" } : { title: "asc" },
       limit: 20,
       offset: (page - 1) * 20,
       with: {
-        tags: true,
+        tags: {
+          columns: { id: true, name: true, slug: true },
+        },
       },
       columns: {
         id: true,
@@ -75,13 +101,29 @@ export const getAll = base
         excerpt: true,
         slug: true,
         updatedAt: true,
-      }
+      },
     });
 
     const articleCount = await db.query.article.findFirst({
+      where: {
+        OR: search
+          ? [
+              {
+                title: { like: `%${search}%` },
+              },
+              {
+                excerpt: { like: `%${search}%` },
+              },
+              {
+                content: { like: `%${search}%` },
+              },
+            ]
+          : undefined,
+        published: showUnpublished ? undefined : true,
+      },
       columns: {},
-      extras: { count: count() }
-    })
+      extras: { count: count() },
+    });
 
     if (!articleCount) {
       throw new ORPCError("INTERNAL_SERVER_ERROR");
