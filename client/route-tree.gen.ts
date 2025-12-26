@@ -11,9 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UtilsRouteRouteImport } from './routes/utils/route'
 import { Route as BlogRouteRouteImport } from './routes/blog/route'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UtilsIndexRouteImport } from './routes/utils/index'
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 
 const UtilsRouteRoute = UtilsRouteRouteImport.update({
@@ -24,6 +26,11 @@ const UtilsRouteRoute = UtilsRouteRouteImport.update({
 const BlogRouteRoute = BlogRouteRouteImport.update({
   id: '/blog',
   path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -41,6 +48,11 @@ const BlogIndexRoute = BlogIndexRouteImport.update({
   path: '/',
   getParentRoute: () => BlogRouteRoute,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -49,44 +61,60 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/blog': typeof BlogRouteRouteWithChildren
   '/utils': typeof UtilsRouteRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/utils/': typeof UtilsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
   '/utils': typeof UtilsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/blog': typeof BlogRouteRouteWithChildren
   '/utils': typeof UtilsRouteRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/utils/': typeof UtilsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/blog' | '/utils' | '/blog/$slug' | '/blog/' | '/utils/'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/blog/$slug' | '/blog' | '/utils'
-  id:
-    | '__root__'
+  fullPaths:
     | '/'
+    | '/admin'
     | '/blog'
     | '/utils'
     | '/blog/$slug'
+    | '/admin/'
+    | '/blog/'
+    | '/utils/'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/' | '/blog/$slug' | '/admin' | '/blog' | '/utils'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/blog'
+    | '/utils'
+    | '/blog/$slug'
+    | '/admin/'
     | '/blog/'
     | '/utils/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
   BlogRouteRoute: typeof BlogRouteRouteWithChildren
   UtilsRouteRoute: typeof UtilsRouteRouteWithChildren
 }
@@ -105,6 +133,13 @@ declare module '@tanstack/react-router' {
       path: '/blog'
       fullPath: '/blog'
       preLoaderRoute: typeof BlogRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -128,6 +163,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof BlogRouteRoute
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/blog/$slug': {
       id: '/blog/$slug'
       path: '/$slug'
@@ -137,6 +179,18 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AdminRouteRouteChildren {
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
 
 interface BlogRouteRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
@@ -166,6 +220,7 @@ const UtilsRouteRouteWithChildren = UtilsRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
   BlogRouteRoute: BlogRouteRouteWithChildren,
   UtilsRouteRoute: UtilsRouteRouteWithChildren,
 }
