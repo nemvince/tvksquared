@@ -9,6 +9,7 @@ import {
 } from "@milkdown/kit/plugin/upload";
 import type { Node } from "@milkdown/kit/prose/model";
 import { Milkdown, MilkdownProvider, useEditor } from "@milkdown/react";
+import type { FC } from "react";
 import { rawApi } from "@/client/lib/api";
 
 const uploader: Uploader = async (inputFiles, schema) => {
@@ -47,7 +48,7 @@ const uploader: Uploader = async (inputFiles, schema) => {
   return nodes;
 };
 
-const CrepeEditor: React.FC = () => {
+const CrepeEditor: FC = () => {
   useEditor((root) => {
     const crepe = new Crepe({
       root,
@@ -77,7 +78,7 @@ const CrepeEditor: React.FC = () => {
   return <Milkdown />;
 };
 
-export const MilkdownEditorWrapper: React.FC = () => {
+export const MilkdownEditorWrapper: FC = () => {
   return (
     <MilkdownProvider>
       <CrepeEditor />

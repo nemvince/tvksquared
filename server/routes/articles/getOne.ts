@@ -24,7 +24,7 @@ const redactDeletedComments = (
 
 export const getOne = base
   .use(authMiddleware)
-  .input(articleSelectSchema.pick({ id: true }))
+  .input(articleSelectSchema.pick({ slug: true }))
   .output(
     articleSelectSchema.extend({
       tags: tagSelectSchema
@@ -37,40 +37,58 @@ export const getOne = base
       comments: commentSelectSchema.array(),
     })
   )
-  .handler(async ({ context }) => {
-    const article = await db.query.article.findFirst({
-      where: { id: {} },
+  .handler(async ({ input, context }) => {
+    const [article] = await db.query.article.findMany({
+      where: {
+        slug: {
+          eq: input.slug,
+        },
+      },
       with: {
         tags: {
           columns: { id: true, name: true, slug: true },
         },
         comments: true,
       },
+      limit: 1,
     });
 
     if (!article) {
-      throw new ORPCError("NOT_FOUND");
-    }
-
-    if (!(article.published || context.user)) {
+      console.log("Article not found:", input.slug);
       throw new ORPCError("NOT_FOUND");
     }
 
     if (!context.user) {
-      throw new ORPCError("NOT_FOUND");
+      // If user is not authenticated, only return published articles
+      if (!article.published) {
+        console.log("Article not published:", input.slug);
+        throw new ORPCError("NOT_FOUND");
+      }
+      return {
+        ...article,
+        comments: redactDeletedComments(article.comments),
+      };
     }
 
-    const canReadUnpublished = await auth.api.userHasPermission({
-      body: {
-        userId: context.user.id,
-        permission: { article: ["readUnpublished"] },
-      },
-    });
-    if (canReadUnpublished.error) {
-      throw new ORPCError("INTERNAL_SERVER_ERROR");
-    }
-    if (!canReadUnpublished.success) {
-      throw new ORPCError("NOT_FOUND");
+    if (!article.published) {
+      // If article is not published, check if user has permission to read unpublished articles
+      const canReadUnpublished = await auth.api.userHasPermission({
+        body: {
+          userId: context.user.id,
+          permission: { article: ["readUnpublished"] },
+        },
+      });
+      if (canReadUnpublished.error) {
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
+      }
+      if (!canReadUnpublished.success) {
+        console.log(
+          "User cannot read unpublished articles:",
+          context.user.id,
+          article.published
+        );
+        throw new ORPCError("NOT_FOUND");
+      }
     }
 
     const canModerateComments = await auth.api.userHasPermission({
@@ -83,12 +101,10 @@ export const getOne = base
       throw new ORPCError("INTERNAL_SERVER_ERROR");
     }
 
-    if (canModerateComments.success) {
-      return article;
-    }
-
     return {
       ...article,
-      comments: redactDeletedComments(article.comments),
+      comments: canModerateComments.success
+        ? article.comments
+        : redactDeletedComments(article.comments),
     };
   });

@@ -33,39 +33,51 @@ const rpcHandler = new RPCHandler(router, {
   ],
 });
 
-export default {
-  // biome-ignore lint/suspicious/noConfusingVoidType: it's to shut TS up
-  async fetch(req: Request): Promise<Response | void> {
-    const rpc = await rpcHandler.handle(req, {
-      prefix: "/api/rpc",
-      context: {
-        headers: req.headers,
-      },
-    });
+// biome-ignore lint/suspicious/noConfusingVoidType: ignore
+const fetch = async (req: Request): Promise<Response | void> => {
+  console.log(`Incoming request: ${req.method} ${req.url}`);
 
-    if (rpc.matched) {
-      return rpc.response;
+  const rpc = await rpcHandler.handle(req, {
+    prefix: "/api/rpc",
+    context: {
+      headers: req.headers,
+    },
+  });
+
+  if (rpc.matched) {
+    console.log(
+      `RPC matched for ${req.method} ${req.url} - response status ${rpc.response.status}`
+    );
+    if (rpc.response.status === 404) {
+      // TODO: open an issue in nitro so we can avoid this workaround
+      return new Response(rpc.response.body, {
+        ...rpc.response,
+        status: 400,
+      });
     }
+    return rpc.response;
+  }
 
-    const authResponse = await auth.handler(req);
+  const authResponse = await auth.handler(req);
 
-    if (authResponse.status !== 404) {
-      return authResponse;
+  if (authResponse.status !== 404) {
+    return authResponse;
+  }
+
+  const url = new URL(req.url);
+  if (req.method === "GET" && url.pathname.startsWith("/uploads/")) {
+    const file = await getFile(url.pathname.replace("/uploads/", ""));
+    if (file) {
+      return new Response(file.file.stream(), {
+        status: 200,
+        headers: {
+          "Content-Type": file.mimeType,
+          "Content-Disposition": `inline; filename="${file.name}"`,
+        },
+      });
     }
-
-    const url = new URL(req.url);
-    if (req.method === "GET" && url.pathname.startsWith("/uploads/")) {
-      const file = await getFile(url.pathname.replace("/uploads/", ""));
-      if (file) {
-        return new Response(file.file.stream(), {
-          status: 200,
-          headers: {
-            "Content-Type": file.mimeType,
-            "Content-Disposition": `inline; filename="${file.name}"`,
-          },
-        });
-      }
-      // no need to return 404 here, let frontend handle it
-    }
-  },
+    // no need to return 404 here, let frontend handle it
+  }
 };
+
+export default { fetch };

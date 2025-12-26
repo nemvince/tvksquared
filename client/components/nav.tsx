@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@tanstack/react-router";
-import type * as React from "react";
+import type { ComponentPropsWithoutRef } from "react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -78,7 +78,7 @@ function ListItem({
   children,
   href,
   ...props
-}: React.ComponentPropsWithoutRef<"li"> & { href: string }) {
+}: ComponentPropsWithoutRef<"li"> & { href: string }) {
   return (
     <li {...props}>
       <NavigationMenuLink

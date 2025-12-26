@@ -17,7 +17,7 @@ export const article = sqliteTable(
   {
     id: text("id").primaryKey(),
     title: text("title").notNull(),
-    slug: text("slug").notNull().unique(),
+    slug: text("slug").unique().notNull(),
     content: text("content").notNull(),
     excerpt: text("excerpt"),
     published: integer("published", { mode: "boolean" })

@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/complexity/noExcessiveCognitiveComplexity: is a script, who cares */
 
+import path from "node:path";
 import { faker } from "@faker-js/faker";
 import { kebabCase } from "string-ts";
 import { db } from "@/server/db";
@@ -43,6 +44,10 @@ const TAGS = [
   "Backend",
   "Full Stack",
 ];
+
+const testMarkdownContent = await Bun.file(
+  path.join(__dirname, "content.md")
+).text();
 
 const createTags = async () => {
   console.log("📌 Creating tags...");
@@ -127,29 +132,24 @@ const createArticles = async (user: User, tagIds: string[]) => {
       ? faker.date.between({ from: createdAt, to: new Date() })
       : null;
 
-    const paragraphCount = faker.number.int({ min: 8, max: 20 });
-    const contentParagraphs: string[] = [];
-
-    for (let j = 0; j < paragraphCount; j++) {
-      const sentenceCount = faker.number.int({ min: 3, max: 8 });
-      contentParagraphs.push(faker.lorem.paragraph(sentenceCount));
-    }
-
-    const content = contentParagraphs.join("\n\n");
+    const content = testMarkdownContent;
     const excerpt = faker.lorem.sentences(faker.number.int({ min: 2, max: 3 }));
 
-    await db.insert(article).values({
-      id,
-      title,
-      slug,
-      content,
-      excerpt,
-      published,
-      publishedAt,
-      authorId: user.id,
-      createdAt,
-      updatedAt: faker.date.between({ from: createdAt, to: new Date() }),
-    });
+    await db
+      .insert(article)
+      .values({
+        id,
+        title,
+        slug,
+        content,
+        excerpt,
+        published,
+        publishedAt,
+        authorId: user.id,
+        createdAt,
+        updatedAt: faker.date.between({ from: createdAt, to: new Date() }),
+      })
+      .onConflictDoNothing();
 
     articleIds.push(id);
 
@@ -245,6 +245,11 @@ async function seed() {
     );
   }
   console.log(`✅ Found user: ${user.name} (${user.id})`);
+
+  await db.delete(comment);
+  await db.delete(articleTag);
+  await db.delete(article);
+  await db.delete(tag);
 
   // Create tags
   const tagIds = await createTags();

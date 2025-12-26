@@ -1,6 +1,5 @@
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import type { ComponentProps } from "react";
-import { Header } from "@/client/components/header";
 import { Logo } from "@/client/components/logo";
 import { Button } from "@/client/components/ui/button";
 import {
@@ -34,33 +33,30 @@ export const NotFound = () => {
   const router = useRouter();
 
   return (
-    <>
-      <Empty className="h-full bg-linear-to-b from-primary/15 to-background">
-        <EmptyHeader>
-          <Logo />
-          <EmptyMedia className="mb-16" variant="default">
-            <NotFoundKitty className="h-32 w-auto fill-primary md:h-48" />
-          </EmptyMedia>
-          <EmptyTitle>Not found</EmptyTitle>
-          <EmptyDescription>
-            The page you are looking for does not exist.
-          </EmptyDescription>
-        </EmptyHeader>
-        <EmptyContent>
-          <Button
-            className="cursor-pointer"
-            onClick={() => {
-              router.history.canGoBack()
-                ? router.history.back()
-                : navigate({ to: "/" });
-            }}
-            variant="link"
-          >
-            Go back
-          </Button>
-        </EmptyContent>
-      </Empty>
-      <Header showLogo={false} />
-    </>
+    <Empty className="h-full bg-linear-to-b from-background to-primary/15">
+      <EmptyHeader>
+        <Logo />
+        <EmptyMedia className="mb-16" variant="default">
+          <NotFoundKitty className="h-32 w-auto fill-primary md:h-48" />
+        </EmptyMedia>
+        <EmptyTitle>Not found</EmptyTitle>
+        <EmptyDescription>
+          The page you are looking for does not exist.
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button
+          className="cursor-pointer"
+          onClick={() => {
+            router.history.canGoBack()
+              ? router.history.back()
+              : navigate({ to: "/" });
+          }}
+          variant="link"
+        >
+          Go back
+        </Button>
+      </EmptyContent>
+    </Empty>
   );
 };

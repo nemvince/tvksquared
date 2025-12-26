@@ -230,6 +230,8 @@ function RouteComponent() {
     return items;
   };
 
+  console.log(articlesQuery.data);
+
   return (
     <>
       <title>tvk² - blog</title>

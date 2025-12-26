@@ -6,6 +6,7 @@ import ReactDOM from "react-dom/client";
 import { routeTree } from "@/client/route-tree.gen";
 
 import "@/client/lib/styles/global.css";
+import { NotFound } from "@/client/components/not-found";
 import reportWebVitals from "@/client/lib/web-vitals";
 
 // Create a new router instance
@@ -13,10 +14,11 @@ const router = createRouter({
   routeTree,
   context: {},
   defaultPreload: "intent",
-  notFoundMode: "root",
   scrollRestoration: true,
   defaultStructuralSharing: true,
   defaultPreloadStaleTime: 0,
+  notFoundMode: "root",
+  defaultNotFoundComponent: () => <NotFound />,
 });
 
 // Register the router instance for type safety
