@@ -9,8 +9,8 @@ const link = new RPCLink({
   url: `${window.location.origin}/api/rpc`,
 });
 
-const client: RouterClient<typeof router> = createORPCClient(link);
+export const rawApi: RouterClient<typeof router> = createORPCClient(link);
 
-export type Outputs = InferClientOutputs<typeof client>;
+export type Outputs = InferClientOutputs<typeof rawApi>;
 
-export const api = createTanstackQueryUtils(client);
+export const api = createTanstackQueryUtils(rawApi);

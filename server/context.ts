@@ -1,5 +1,5 @@
 import { os } from "@orpc/server";
-import type { Session, User } from "better-auth";
+import type { Session, User } from "@/server/lib/auth";
 
 type Context = {
   headers: Headers;

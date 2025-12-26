@@ -1,11 +1,11 @@
 /** biome-ignore-all lint/complexity/noExcessiveCognitiveComplexity: is a script, who cares */
 
 import { faker } from "@faker-js/faker";
-import type { User } from "better-auth";
 import { kebabCase } from "string-ts";
 import { db } from "@/server/db";
 import { user as userTable } from "@/server/db/schema/auth";
 import { article, articleTag, comment, tag } from "@/server/db/schema/blog";
+import type { User } from "@/server/lib/auth";
 
 import "@/server/db/migrate";
 

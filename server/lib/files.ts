@@ -82,9 +82,9 @@ export const uploadFile = async (
 
     return {
       id: createdFile.id,
-      url: extension
-        ? `/uploads/${createdFile.id}.${extension}`
-        : `/uploads/${createdFile.id}`,
+      url: `${env.baseUrl}/uploads/${createdFile.id}/${sanitizedName}${
+        extension ? `.${extension}` : ""
+      }`,
     };
   } catch (error) {
     await Bun.file(filePath)
@@ -136,13 +136,19 @@ export const deleteFile = async (fileId: string): Promise<void> => {
 };
 
 export const getFile = async (
-  fileId: string
+  query: string
 ): Promise<
   InferSelectModel<typeof file> & {
     name: string;
-    buffer: Buffer;
+    file: Bun.BunFile;
   }
 > => {
+  const fileId = query.includes("/") ? query.split("/")[0] : query;
+
+  if (!fileId || fileId.length === 0) {
+    throw new Error("File ID is required");
+  }
+
   const [fileRecord] = await db.select().from(file).where(eq(file.id, fileId));
 
   if (!fileRecord) {
@@ -160,22 +166,15 @@ export const getFile = async (
     ? `${fileRecord.id}.${fileRecord.extension}`
     : fileRecord.id;
   const filePath = path.join(uploadDir, fileName);
+  const fileItem = Bun.file(filePath);
 
-  let fileBuffer: Buffer;
-  try {
-    const arrayBuffer = await Bun.file(filePath).arrayBuffer();
-    fileBuffer = Buffer.from(arrayBuffer);
-  } catch (error) {
-    throw new Error(
-      `Failed to read file from filesystem: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`
-    );
+  if (!fileItem.exists()) {
+    throw new Error("File not found on filesystem");
   }
 
   return {
     ...fileRecord,
     name: extension ? `${name}.${extension}` : name,
-    buffer: fileBuffer,
+    file: fileItem,
   };
 };

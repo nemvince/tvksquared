@@ -1,4 +1,4 @@
-import { betterAuth } from "better-auth";
+import { betterAuth, type InferSession, type InferUser } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin } from "better-auth/plugins";
 import { db } from "@/server/db";
@@ -26,3 +26,6 @@ export const auth = betterAuth({
     }),
   ],
 });
+
+export type User = InferUser<typeof auth>;
+export type Session = InferSession<typeof auth>;
