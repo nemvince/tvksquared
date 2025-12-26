@@ -14,6 +14,12 @@ type BlogCardProps = {
   title: string;
   slug: string;
   excerpt: string | null;
+  updateSearch: (updates: {
+    q?: string;
+    page?: number;
+    sort?: "publishedAt" | "title";
+    tag?: string;
+  }) => void;
   tags: {
     id: string;
     name: string;
@@ -21,7 +27,13 @@ type BlogCardProps = {
   }[];
 };
 
-export function BlogCard({ title, slug, excerpt, tags }: BlogCardProps) {
+export function BlogCard({
+  title,
+  slug,
+  excerpt,
+  tags,
+  updateSearch,
+}: BlogCardProps) {
   return (
     <Card className="relative flex w-full max-w-sm flex-col overflow-hidden py-0">
       <Link
@@ -46,15 +58,15 @@ export function BlogCard({ title, slug, excerpt, tags }: BlogCardProps) {
       <CardFooter className="overflow-scroll overflow-y-scroll [&::-webkit-scrollbar-thumb]:border-primary [&::-webkit-scrollbar-thumb]:border-b-2 [&::-webkit-scrollbar-thumb]:bg-card [&::-webkit-scrollbar-track]:bg-card [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar]:w-0">
         {tags.map((tag) => (
           <Badge
-            className="-mb-2 py-0"
+            className="-mb-2 cursor-pointer py-0"
             key={tag.slug}
-            render={
-              <Link params={{ tag: tag.slug }} to="/blog/tags/$tag">
-                {tag.name}
-              </Link>
-            }
+            onClick={() => {
+              updateSearch({ tag: tag.slug, page: 1 });
+            }}
             variant="link"
-          />
+          >
+            {tag.name}
+          </Badge>
         ))}
       </CardFooter>
     </Card>

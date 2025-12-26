@@ -18,6 +18,7 @@ export const getAll = base
         .enum(["publishedAt", "title"])
         .optional()
         .default("publishedAt"),
+      tagSlug: z.string().optional(),
     })
   )
   .output(
@@ -50,7 +51,7 @@ export const getAll = base
     })
   )
   .handler(async ({ input, context }) => {
-    const { search, page, showUnpublished, sortBy } = input;
+    const { search, page, showUnpublished, sortBy, tagSlug } = input;
 
     if (showUnpublished) {
       if (!context.user) {
@@ -69,20 +70,33 @@ export const getAll = base
 
     const articles = await db.query.article.findMany({
       where: {
-        OR: search
-          ? [
-              {
-                title: { like: `%${search}%` },
-              },
-              {
-                excerpt: { like: `%${search}%` },
-              },
-              {
-                content: { like: `%${search}%` },
-              },
-            ]
-          : undefined,
         published: showUnpublished ? undefined : true,
+        AND: [
+          ...(search
+            ? [
+                {
+                  title: { like: `%${search}%` },
+                },
+                {
+                  excerpt: { like: `%${search}%` },
+                },
+                {
+                  content: { like: `%${search}%` },
+                },
+              ]
+            : []),
+          ...(tagSlug
+            ? [
+                {
+                  tags: {
+                    slug: {
+                      eq: tagSlug,
+                    },
+                  },
+                },
+              ]
+            : []),
+        ],
       },
       orderBy:
         sortBy === "publishedAt" ? { publishedAt: "desc" } : { title: "asc" },

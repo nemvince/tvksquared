@@ -1,15 +1,26 @@
 import {
   ArrowsDownUpIcon,
   CalendarIcon,
+  CaretUpDownIcon,
+  CheckIcon,
   MagnifyingGlassIcon,
   NewspaperClippingIcon,
   TextAaIcon,
 } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { z } from "zod";
 import { BlogCard, BlogCardSkeleton } from "@/client/components/blog/card";
 import { Button } from "@/client/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/client/components/ui/command";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,13 +43,28 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/client/components/ui/pagination";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/client/components/ui/popover";
+import { Skeleton } from "@/client/components/ui/skeleton";
 import { useDebounce } from "@/client/hooks/use-debounce";
 import { api } from "@/client/lib/api";
+import { cn } from "@/client/lib/utils";
+
+type SearchUpdates = {
+  q?: string;
+  page?: number;
+  sort?: "publishedAt" | "title";
+  tag?: string;
+};
 
 const searchSchema = z.object({
   q: z.string().optional().catch(""),
   page: z.number().min(1).optional().catch(1),
   sort: z.enum(["publishedAt", "title"]).optional().catch("publishedAt"),
+  tag: z.string().optional(),
 });
 
 export const Route = createFileRoute("/blog/")({
@@ -46,27 +72,125 @@ export const Route = createFileRoute("/blog/")({
   validateSearch: searchSchema,
 });
 
+const TagFilter = ({
+  updateSearch,
+}: {
+  updateSearch: (updates: SearchUpdates) => void;
+}) => {
+  const tagsQuery = useQuery(api.tags.getAll.queryOptions());
+  const { tag: currentTag } = Route.useSearch();
+  const [open, setOpen] = useState(false);
+
+  if (tagsQuery.error) {
+    return null;
+  }
+
+  if (tagsQuery.isPending) {
+    return <Skeleton className="h-8 w-50" />;
+  }
+
+  return (
+    <Popover onOpenChange={setOpen} open={open}>
+      <PopoverTrigger
+        render={
+          <Button
+            aria-expanded={open}
+            className="w-50 justify-between"
+            role="combobox"
+            variant="outline"
+          >
+            {currentTag
+              ? tagsQuery.data?.tags.find((tag) => tag.slug === currentTag)
+                  ?.name
+              : "Filter tags"}
+            <CaretUpDownIcon />
+          </Button>
+        }
+      />
+      <PopoverContent className="w-50 p-0">
+        <Command>
+          <CommandInput className="h-9" placeholder="Search tags" />
+          <CommandList>
+            <CommandEmpty>No tags found.</CommandEmpty>
+            <CommandGroup>
+              {tagsQuery.data?.tags.map((tag) => (
+                <CommandItem
+                  key={tag.id}
+                  onSelect={(currentValue) => {
+                    updateSearch({
+                      tag: currentValue === currentTag ? "" : currentValue,
+                      page: 1,
+                    });
+                    setOpen(false);
+                  }}
+                  value={tag.slug}
+                >
+                  {tag.name}
+                  <CheckIcon
+                    className={cn(
+                      "ml-auto",
+                      currentTag === tag.slug ? "opacity-100" : "hidden"
+                    )}
+                  />
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+};
+
+const SortFilter = ({
+  updateSearch,
+}: {
+  updateSearch: (updates: SearchUpdates) => void;
+}) => {
+  const { sort = "publishedAt" } = Route.useSearch();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <Button variant="outline">
+            <ArrowsDownUpIcon weight="bold" />
+            Sort by: {sort === "publishedAt" ? "Date" : "Title"}
+          </Button>
+        }
+      />
+      <DropdownMenuContent className="w-48">
+        <DropdownMenuItem onClick={() => updateSearch({ sort: "publishedAt" })}>
+          <CalendarIcon weight="bold" />
+          Date (newest first)
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => updateSearch({ sort: "title" })}>
+          <TextAaIcon weight="bold" />
+          Title (A-Z)
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
 function RouteComponent() {
   const navigate = useNavigate();
-  const { q = "", page = 1, sort = "publishedAt" } = Route.useSearch();
+  const { q = "", page = 1, sort = "publishedAt", tag } = Route.useSearch();
 
   const debouncedSearch = useDebounce(q, 300);
 
-  const query = useQuery(
+  const articlesQuery = useQuery(
     api.articles.getAll.queryOptions({
       input: {
         search: debouncedSearch || undefined,
         sortBy: sort,
         page,
+        tag,
       },
     })
   );
 
-  const updateSearch = (updates: {
-    q?: string;
-    page?: number;
-    sort?: "publishedAt" | "title";
-  }) => {
+  const updateSearch = (updates: SearchUpdates) => {
     navigate({
       to: "/blog",
       search: (prev) => ({
@@ -77,11 +201,13 @@ function RouteComponent() {
             ? 1
             : (updates.page ?? prev.page),
         q: updates.q ? updates.q : undefined,
+        tag: updates.tag ? updates.tag : undefined,
       }),
     });
   };
 
-  const { totalPages = 1, totalItems = 0 } = query.data?.pagination ?? {};
+  const { totalPages = 1, totalItems = 0 } =
+    articlesQuery.data?.pagination ?? {};
 
   const getPaginationItems = () => {
     const items: (number | "ellipsis")[] = [];
@@ -129,30 +255,8 @@ function RouteComponent() {
                 value={q}
               />
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <Button variant="outline">
-                    <ArrowsDownUpIcon weight="bold" />
-                    Sort by: {sort === "publishedAt" ? "Date" : "Title"}
-                  </Button>
-                }
-              />
-              <DropdownMenuContent className="w-48">
-                <DropdownMenuItem
-                  onClick={() => updateSearch({ sort: "publishedAt" })}
-                >
-                  <CalendarIcon weight="bold" />
-                  Date (newest first)
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => updateSearch({ sort: "title" })}
-                >
-                  <TextAaIcon weight="bold" />
-                  Title (A-Z)
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <SortFilter updateSearch={updateSearch} />
+            <TagFilter updateSearch={updateSearch} />
           </div>
           <p className="pr-4 text-muted-foreground text-sm">
             {totalItems} article{totalItems !== 1 ? "s" : ""} found
@@ -160,7 +264,7 @@ function RouteComponent() {
           </p>
         </div>
 
-        {query.isLoading && (
+        {articlesQuery.isLoading && (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
               <BlogCardSkeleton key={`skeleton-${i.toString()}`} />
@@ -168,20 +272,20 @@ function RouteComponent() {
           </div>
         )}
 
-        {query.error && (
+        {articlesQuery.error && (
           <Empty className="my-12">
             <EmptyMedia variant="icon">
               <NewspaperClippingIcon weight="bold" />
             </EmptyMedia>
             <EmptyTitle>Error loading articles</EmptyTitle>
-            <EmptyDescription>{String(query.error)}</EmptyDescription>
-            <Button onClick={() => query.refetch()} variant="outline">
+            <EmptyDescription>{String(articlesQuery.error)}</EmptyDescription>
+            <Button onClick={() => articlesQuery.refetch()} variant="outline">
               Try again
             </Button>
           </Empty>
         )}
 
-        {query.data?.articles.length === 0 && (
+        {articlesQuery.data?.articles.length === 0 && (
           <Empty className="my-12">
             <EmptyMedia variant="icon">
               <NewspaperClippingIcon weight="bold" />
@@ -202,11 +306,15 @@ function RouteComponent() {
           </Empty>
         )}
 
-        {query.data && query.data.articles.length > 0 && (
+        {articlesQuery.data && articlesQuery.data.articles.length > 0 && (
           <>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {query.data.articles.map((article) => (
-                <BlogCard key={article.id} {...article} />
+              {articlesQuery.data.articles.map((article) => (
+                <BlogCard
+                  key={article.id}
+                  updateSearch={updateSearch}
+                  {...article}
+                />
               ))}
             </div>
 

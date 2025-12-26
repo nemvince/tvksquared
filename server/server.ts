@@ -4,6 +4,7 @@ import { CORSPlugin } from "@orpc/server/plugins";
 import { runTask } from "nitro/task";
 import { auth } from "@/server/lib/auth";
 import { articles } from "@/server/routes/articles";
+import { tags } from "@/server/routes/tags";
 
 const { result } = await runTask("migrate");
 
@@ -13,6 +14,7 @@ if (result !== "ok") {
 
 export const router = {
   articles,
+  tags,
 };
 
 const rpcHandler = new RPCHandler(router, {
