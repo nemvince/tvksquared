@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { Footer } from "@/client/components/footer";
 import { Header } from "@/client/components/header";
 import { Nav } from "@/client/components/nav";
 
@@ -13,6 +14,7 @@ function RouteComponent() {
         <Nav />
       </Header>
       <Outlet />
+      <Footer />
     </>
   );
 }

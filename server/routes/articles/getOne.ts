@@ -2,6 +2,7 @@ import { ORPCError } from "@orpc/server";
 import type { InferSelectModel } from "drizzle-orm";
 import { base } from "@/server/context";
 import { db } from "@/server/db";
+import { userSelectSchema } from "@/server/db/schema/auth";
 import {
   articleSelectSchema,
   type comment,
@@ -12,7 +13,7 @@ import { auth } from "@/server/lib/auth";
 import { authMiddleware } from "@/server/lib/auth/middleware";
 
 const redactDeletedComments = (
-  comments: InferSelectModel<typeof comment>[]
+  comments: Array<InferSelectModel<typeof comment> & { author: { name: string; image: string | null } | null }>
 ) => {
   return comments.map((comment) => {
     if (comment.deleted) {
@@ -27,6 +28,13 @@ export const getOne = base
   .input(articleSelectSchema.pick({ slug: true }))
   .output(
     articleSelectSchema.extend({
+      author: userSelectSchema
+        .pick({
+          id: true,
+          name: true,
+          image: true,
+        })
+        .nullable(),
       tags: tagSelectSchema
         .pick({
           id: true,
@@ -34,7 +42,14 @@ export const getOne = base
           slug: true,
         })
         .array(),
-      comments: commentSelectSchema.array(),
+      comments: commentSelectSchema
+        .extend({
+          author: userSelectSchema.pick({
+            name: true,
+            image: true,
+          }).nullable(),
+        })
+        .array(),
     })
   )
   .handler(async ({ input, context }) => {
@@ -45,10 +60,19 @@ export const getOne = base
         },
       },
       with: {
+        author: {
+          columns: { id: true, name: true, image: true },
+        },
         tags: {
           columns: { id: true, name: true, slug: true },
         },
-        comments: true,
+        comments: {
+          with: {
+            author: {
+              columns: { name: true, image: true },
+            },
+          },
+        },
       },
       limit: 1,
     });

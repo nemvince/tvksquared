@@ -1,4 +1,5 @@
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { createSelectSchema } from "drizzle-zod";
 
 export const user = sqliteTable("user", {
   id: text("id").primaryKey(),
@@ -87,3 +88,5 @@ export const authSchema = {
   account,
   verification,
 };
+
+export const userSelectSchema = createSelectSchema(user);

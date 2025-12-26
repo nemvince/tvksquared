@@ -37,3 +37,20 @@ export const Markdown = (props: Options) => {
     />
   );
 };
+
+export const CommentMarkdown = (props: Options) => {
+  return (
+    <MarkdownPrimitive
+      {...props}
+      components={{
+        table: Table,
+        ul: Ul,
+        ol: Ol,
+        blockquote: Blockquote,
+        pre: CodeBlock,
+      }}
+      rehypePlugins={[rehypeHighlight]}
+      remarkPlugins={[remarkGfm]}
+    />
+  );
+}
