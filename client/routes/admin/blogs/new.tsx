@@ -17,18 +17,14 @@ const uploader: Uploader = async (inputFiles, schema) => {
   for (let i = 0; i < inputFiles.length; i++) {
     const file = inputFiles.item(i);
     if (!file) {
-      console.warn(`File at index ${i} is null or undefined, skipping.`);
       continue;
     }
 
     files.push(file);
   }
 
-  console.log("Files to upload:", files);
-
   const nodes: Node[] = await Promise.all(
     files.map(async (file) => {
-      console.log("Uploading file:", file.name);
       const { url } = await rawApi.files.upload(file);
       const alt = file.name;
       if (file.type.startsWith("image/")) {
@@ -37,7 +33,6 @@ const uploader: Uploader = async (inputFiles, schema) => {
           alt,
         }) as Node;
       }
-      console.log(schema.nodes);
       const linkMark = schema.marks.link?.create({
         href: url,
         title: alt,
@@ -59,9 +54,8 @@ const CrepeEditor: React.FC = () => {
       featureConfigs: {
         "image-block": {
           async onUpload(file) {
-            console.log("Uploading file:", file.name);
-            await new Promise((resolve) => setTimeout(resolve, 500));
-            return URL.createObjectURL(file);
+            const { url } = await rawApi.files.upload(file);
+            return url;
           },
         },
       },
