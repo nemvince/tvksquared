@@ -55,7 +55,7 @@ export function BlogCard({
           <CardDescription className="line-clamp-2">{excerpt}</CardDescription>
         </CardHeader>
       </Link>
-      <CardFooter className="overflow-scroll overflow-y-scroll [&::-webkit-scrollbar-thumb]:border-primary [&::-webkit-scrollbar-thumb]:border-b-2 [&::-webkit-scrollbar-thumb]:bg-card [&::-webkit-scrollbar-track]:bg-card [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar]:w-0">
+      <CardFooter className="overflow-scroll overflow-y-scroll [&::-webkit-scrollbar-thumb]:box-border [&::-webkit-scrollbar-thumb]:border-primary [&::-webkit-scrollbar-thumb]:border-b-2 [&::-webkit-scrollbar-thumb]:bg-card [&::-webkit-scrollbar-track]:bg-card [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar]:w-0">
         {tags.map((tag) => (
           <Badge
             className="-mb-2 cursor-pointer py-0"
