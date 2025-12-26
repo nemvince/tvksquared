@@ -21,13 +21,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      "@frontend": fileURLToPath(new URL("./src", import.meta.url)),
-      "@backend": fileURLToPath(new URL("../backend/src", import.meta.url)),
-    },
-  },
-  server: {
-    proxy: {
-      "/api": "http://localhost:3001",
+      "@/": fileURLToPath(new URL("./", import.meta.url)),
     },
   },
 });
