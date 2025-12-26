@@ -68,36 +68,42 @@ export const getAll = base
       }
     }
 
-    const articles = await db.query.article.findMany({
-      where: {
-        published: showUnpublished ? undefined : true,
-        AND: [
-          ...(search
-            ? [
-                {
-                  title: { like: `%${search}%` },
-                },
-                {
-                  excerpt: { like: `%${search}%` },
-                },
-                {
-                  content: { like: `%${search}%` },
-                },
-              ]
-            : []),
-          ...(tagSlug
-            ? [
-                {
-                  tags: {
-                    slug: {
-                      eq: tagSlug,
-                    },
+    const where = {
+      published: showUnpublished ? undefined : true,
+      AND: [
+        ...(search
+          ? [
+              {
+                OR: [
+                  {
+                    title: { like: `%${search}%` },
+                  },
+                  {
+                    excerpt: { like: `%${search}%` },
+                  },
+                  {
+                    content: { like: `%${search}%` },
+                  },
+                ],
+              },
+            ]
+          : []),
+        ...(tagSlug
+          ? [
+              {
+                tags: {
+                  slug: {
+                    eq: tagSlug,
                   },
                 },
-              ]
-            : []),
-        ],
-      },
+              },
+            ]
+          : []),
+      ],
+    };
+
+    const articles = await db.query.article.findMany({
+      where,
       orderBy:
         sortBy === "publishedAt" ? { publishedAt: "desc" } : { title: "asc" },
       limit: 20,
@@ -119,22 +125,7 @@ export const getAll = base
     });
 
     const articleCount = await db.query.article.findFirst({
-      where: {
-        OR: search
-          ? [
-              {
-                title: { like: `%${search}%` },
-              },
-              {
-                excerpt: { like: `%${search}%` },
-              },
-              {
-                content: { like: `%${search}%` },
-              },
-            ]
-          : undefined,
-        published: showUnpublished ? undefined : true,
-      },
+      where,
       columns: {},
       extras: { count: count() },
     });

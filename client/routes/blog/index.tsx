@@ -116,14 +116,14 @@ const TagFilter = ({
               {tagsQuery.data?.tags.map((tag) => (
                 <CommandItem
                   key={tag.id}
-                  onSelect={(currentValue) => {
+                  onSelect={() => {
                     updateSearch({
-                      tag: currentValue === currentTag ? "" : currentValue,
-                      page: 1,
+                      tag: tag.slug === currentTag ? undefined : tag.slug,
+                      page: undefined,
                     });
                     setOpen(false);
                   }}
-                  value={tag.slug}
+                  value={tag.name}
                 >
                   {tag.name}
                   <CheckIcon
@@ -196,12 +196,6 @@ function RouteComponent() {
       search: (prev) => ({
         ...prev,
         ...updates,
-        page:
-          updates.q !== undefined || updates.sort !== undefined
-            ? 1
-            : (updates.page ?? prev.page),
-        q: updates.q ? updates.q : undefined,
-        tag: updates.tag ? updates.tag : undefined,
       }),
     });
   };
@@ -249,7 +243,9 @@ function RouteComponent() {
               />
               <Input
                 className="pl-9"
-                onChange={(e) => updateSearch({ q: e.target.value })}
+                onChange={(e) =>
+                  updateSearch({ q: e.target.value, page: undefined })
+                }
                 placeholder="Search articles..."
                 type="search"
                 value={q}
@@ -257,10 +253,22 @@ function RouteComponent() {
             </div>
             <SortFilter updateSearch={updateSearch} />
             <TagFilter updateSearch={updateSearch} />
+            <Button
+              onClick={() =>
+                updateSearch({
+                  q: undefined,
+                  page: undefined,
+                  sort: undefined,
+                  tag: undefined,
+                })
+              }
+              variant="outline"
+            >
+              Clear
+            </Button>
           </div>
           <p className="pr-4 text-muted-foreground text-sm">
             {totalItems} article{totalItems !== 1 ? "s" : ""} found
-            {debouncedSearch && ` for "${debouncedSearch}"`}
           </p>
         </div>
 
