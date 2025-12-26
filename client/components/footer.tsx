@@ -11,7 +11,7 @@ export const Footer = () => {
       <Button
         render={
           <a
-            href="https://github.com/nemvince/tvk-squared"
+            href="https://github.com/nemvince/tvksquared"
             rel="noopener noreferrer"
             target="_blank"
           >
