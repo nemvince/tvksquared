@@ -39,6 +39,32 @@ export const article = sqliteTable(
   ]
 );
 
+export const file = sqliteTable("file", {
+  id: text("id").primaryKey(),
+  mimeType: text("mime_type").notNull(),
+  name: text("name").notNull(),
+  extension: text("extension"),
+  size: integer("size").notNull(),
+  uploadedAt: integer("uploaded_at", { mode: "timestamp_ms" }).notNull(),
+});
+
+export const articleFile = sqliteTable(
+  "article_file",
+  {
+    articleId: text("article_id")
+      .notNull()
+      .references(() => article.id, { onDelete: "cascade" }),
+    fileId: text("file_id")
+      .notNull()
+      .references(() => file.id, { onDelete: "cascade" }),
+  },
+  (table) => [
+    index("articleFile_articleId_idx").on(table.articleId),
+    index("articleFile_fileId_idx").on(table.fileId),
+    index("articleFile_unique_idx").on(table.articleId, table.fileId),
+  ]
+);
+
 export const tag = sqliteTable(
   "tag",
   {
@@ -100,6 +126,8 @@ export const comment = sqliteTable(
 
 export const blogSchema = {
   article,
+  file,
+  articleFile,
   tag,
   articleTag,
   comment,
