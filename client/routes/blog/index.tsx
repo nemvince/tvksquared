@@ -185,7 +185,7 @@ function RouteComponent() {
         search: debouncedSearch || undefined,
         sortBy: sort,
         page,
-        tag,
+        tagSlug: tag,
       },
     })
   );
