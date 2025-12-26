@@ -5,7 +5,7 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { routeTree } from "@/client/route-tree.gen";
 
-import "@/client/styles.css";
+import "@/client/lib/styles/global.css";
 import reportWebVitals from "@/client/lib/web-vitals";
 
 // Create a new router instance

@@ -1,0 +1,29 @@
+@import "@/client/lib/styles/global.css";
+
+.milkdown {
+  --crepe-color-background: var(--background);
+  --crepe-color-on-background: var(--foreground);
+  --crepe-color-surface: var(--card);
+  --crepe-color-surface-low: var(--popover);
+  --crepe-color-on-surface: var(--card-foreground);
+  --crepe-color-on-surface-variant: var(--primary);
+  --crepe-color-outline: var(--primary);
+  --crepe-color-primary: var(--primary);
+  --crepe-color-secondary: var(--secondary);
+  --crepe-color-on-secondary: var(--secondary-foreground);
+  --crepe-color-inverse: var(--foreground);
+  --crepe-color-on-inverse: var(--background);
+  --crepe-color-inline-code: var(--destructive);
+  --crepe-color-error: var(--destructive);
+  --crepe-color-hover: var(--popover);
+  --crepe-color-selected: var(--muted);
+  --crepe-color-inline-area: var(--card);
+
+  --crepe-font-title: var(--font-sans);
+  --crepe-font-default: var(--font-sans);
+  --crepe-font-code: var(--font-mono);
+}
+
+.milkdown * {
+  border-radius: 0 !important;
+}
