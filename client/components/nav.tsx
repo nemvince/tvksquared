@@ -11,8 +11,11 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/client/components/ui/navigation-menu";
+import { authClient } from "@/client/lib/auth";
 
 export const Nav = () => {
+  const { data: auth } = authClient.useSession();
+
   return (
     <NavigationMenu>
       <NavigationMenuList className="flex-wrap">
@@ -58,6 +61,12 @@ export const Nav = () => {
             className={navigationMenuTriggerStyle()}
             render={<Link to="/blog">Blog</Link>}
           />
+          {auth?.user.role === "admin" && (
+            <NavigationMenuLink
+              className={navigationMenuTriggerStyle()}
+              render={<Link to="/admin">Admin</Link>}
+            />
+          )}
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
