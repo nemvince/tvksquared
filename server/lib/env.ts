@@ -1,23 +1,24 @@
 import { env as processEnv } from "bun";
-import { t } from "elysia";
-import { TypeCompiler } from "elysia/type-system";
 import { camelKeys } from "string-ts";
+import { z } from "zod";
 
-const envSchema = t.Object({
-  DATABASE_URL: t.String(),
-  BASE_URL: t.String(),
-  AUTH_SECRET: t.String(),
-  GITHUB_CLIENT_ID: t.String(),
-  GITHUB_CLIENT_SECRET: t.String(),
+const envSchema = z.object({
+  DATABASE_URL: z.string(),
+  UPLOADS_PATH: z.string(),
+  BASE_URL: z.string(),
+  AUTH_SECRET: z.string(),
+  GITHUB_CLIENT_ID: z.string(),
+  GITHUB_CLIENT_SECRET: z.string(),
 });
 
-const validator = TypeCompiler.Compile(envSchema);
-
-if (!validator.Check(processEnv)) {
-  console.error("Invalid environment variables:", [
-    ...validator.Errors(process.env),
-  ]);
-  process.exit(1);
+if (!envSchema.safeParse(processEnv).success) {
+  throw new Error("Invalid environment variables", {
+    cause: envSchema.safeParse(processEnv).error,
+  });
 }
 
-export const env = camelKeys(processEnv);
+const makeTypedEnvironment = <T>(schema: { parse: (v: unknown) => T }) => {
+  return camelKeys(schema.parse(processEnv));
+};
+
+export const env = makeTypedEnvironment(envSchema);
