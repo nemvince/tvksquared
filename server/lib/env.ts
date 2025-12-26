@@ -1,4 +1,3 @@
-import { env as processEnv } from "bun";
 import { camelKeys } from "string-ts";
 import { z } from "zod";
 
@@ -11,14 +10,8 @@ const envSchema = z.object({
   GITHUB_CLIENT_SECRET: z.string(),
 });
 
-if (!envSchema.safeParse(processEnv).success) {
-  throw new Error("Invalid environment variables", {
-    cause: envSchema.safeParse(processEnv).error,
-  });
-}
-
 const makeTypedEnvironment = <T>(schema: { parse: (v: unknown) => T }) => {
-  return camelKeys(schema.parse(processEnv));
+  return camelKeys(schema.parse(Bun.env));
 };
 
 export const env = makeTypedEnvironment(envSchema);

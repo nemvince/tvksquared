@@ -1,6 +1,4 @@
-import fs from "node:fs/promises";
 import path from "node:path";
-import { randomUUIDv7 } from "bun";
 import { eq, type InferSelectModel } from "drizzle-orm";
 import { db } from "@/server/db";
 import { file } from "@/server/db/schema/blog";
@@ -38,7 +36,7 @@ export const uploadFile = async (
     throw new Error("File name is required");
   }
 
-  const id = randomUUIDv7();
+  const id = Bun.randomUUIDv7();
   const { name, extension } = parseFileName(originalName);
   const sanitizedName = name
     .replace(/[/\\]/g, "_") // Path traversal
@@ -54,13 +52,11 @@ export const uploadFile = async (
   }
 
   const uploadDir = path.join(env.uploadsPath, id.slice(0, 2));
-  await fs.mkdir(uploadDir, { recursive: true });
-
   const fileName = extension ? `${id}.${extension}` : id;
   const filePath = path.join(uploadDir, fileName);
 
   try {
-    await fs.writeFile(filePath, fileBuffer);
+    await Bun.write(filePath, fileBuffer);
   } catch (error) {
     throw new Error(
       `Failed to write file: ${error instanceof Error ? error.message : "Unknown error"}`
@@ -91,9 +87,11 @@ export const uploadFile = async (
         : `/uploads/${createdFile.id}`,
     };
   } catch (error) {
-    await fs.unlink(filePath).catch(() => {
-      // ignore errors
-    });
+    await Bun.file(filePath)
+      .unlink()
+      .catch(() => {
+        // ignore errors
+      });
     throw new Error(
       `Failed to create file record: ${error instanceof Error ? error.message : "Unknown error"}`
     );
@@ -114,7 +112,7 @@ export const deleteFile = async (fileId: string): Promise<void> => {
   const filePath = path.join(uploadDir, fileName);
 
   try {
-    await fs.unlink(filePath);
+    await Bun.file(filePath).unlink();
   } catch (error) {
     // ignore file not found errors
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
@@ -165,7 +163,8 @@ export const getFile = async (
 
   let fileBuffer: Buffer;
   try {
-    fileBuffer = await fs.readFile(filePath);
+    const arrayBuffer = await Bun.file(filePath).arrayBuffer();
+    fileBuffer = Buffer.from(arrayBuffer);
   } catch (error) {
     throw new Error(
       `Failed to read file from filesystem: ${
