@@ -10,8 +10,8 @@
     "includes": [
       "**/src/**/*",
       "**/.vscode/**/*",
-      "!**/frontend/src/route-tree.gen.ts",
-      "!**/backend/drizzle/*",
+      "!**/client/route-tree.gen.ts",
+      "!**/drizzle/*",
       "!**/bun.lock"
     ]
   },

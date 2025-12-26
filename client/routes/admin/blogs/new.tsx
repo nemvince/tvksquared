@@ -21,7 +21,7 @@ export const MilkdownEditorWrapper: React.FC = () => {
   );
 };
 
-export const Route = createFileRoute("/admin/blog/new")({
+export const Route = createFileRoute("/admin/blogs/new")({
   component: RouteComponent,
 });
 
